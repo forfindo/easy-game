@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="经典数独在线玩免费网页版，无需下载无广告，打开即玩！支持入门、中级、高级多难度自由切换，电脑手机全屏适配，操作简单易上手，实时记录解题进度，是锻炼逻辑思维、打发碎片时间的优质数独小游戏！">
+    <meta name="keywords" content="数独在线玩,免费在线数独,数独小游戏网页版,数独在线玩 无需下载">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <title>数独</title>
+    <style>
+        .container {
+            position: static;
+        }
+
+        .block-container {
+            width: 100%;
+            border: 2px black solid;
+            box-sizing: border-box;
+        }
+
+        .block-container::after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .tip {
+            margin: 10px 0;
+        }
+
+        .value-picker {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 5px;
+        }
+
+        .value-item {
+            flex-grow: 1;
+            text-align: center;
+            padding: 10px 0;
+            box-sizing: border-box;
+            border: 2px #ADADAD solid;
+            border-radius: 5px;
+        }
+
+        .value-item.clear-value {
+            grid-column: 1 / 3;
+        }
+
+        .value-picker.disable .value-item {
+            background-color: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+        }
+
+        .value-picker.disable,
+        .value-picker.game-over {
+            pointer-events: none;
+        }
+
+        .value-picker.game-over .value-item {
+            background-color: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+        }
+
+        .value-item:hover {
+            background-color: #ADADAD;
+        }
+
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            width: 11.11%;
+            aspect-ratio: 1;
+            font-size: 25px;
+            float: left;
+            border-right: #ADADAD 1px solid;
+            border-bottom: #ADADAD 1px solid;
+        }
+
+        .cell.error {
+            background-color: red !important;
+        }
+
+        .vd-l {
+            border-right: black 1px solid;
+        }
+
+        .vd-r {
+            border-left: black 1px solid;
+        }
+
+        .hd-t {
+            border-bottom: black 1px solid;
+        }
+
+        .hd-b {
+            border-top: black 1px solid;
+        }
+
+        .lc {
+            border-right: unset;
+        }
+
+        .lr {
+            border-bottom: unset;
+        }
+
+        .selected {
+            background-color: rgb(240, 217, 220) !important;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="block-container"></div>
+    <p class="tip">请选择：</p>
+    <div class="value-picker">
+        <span class="value-item">1</span>
+        <span class="value-item">2</span>
+        <span class="value-item">3</span>
+        <span class="value-item">4</span>
+        <span class="value-item">5</span>
+        <span class="value-item">6</span>
+        <span class="value-item">7</span>
+        <span class="value-item">8</span>
+        <span class="value-item">9</span>
+        <span class="value-item clear-value">清除</span>
+    </div>
+    <p class="tip">空白块个数：</p>
+    <label>
+        <input id="count-input" type="number" max="81" min="1"/>
+        <button id="count-submit">重新开始</button>
+    </label>
+    <h2 style="display: none" id="success-tip">你过关！！！！</h2>
+</div>
+<script lang="javascript">
+    (() => {
+        const config = JSON.parse(localStorage.getItem('sudoku-config'));
+        const blockContainer = document.querySelector(".block-container");
+        const valuePicker = document.querySelector(".value-picker");
+        const countInput = document.getElementById("count-input");
+        const submitBtn = document.getElementById("count-submit");
+        const successTip = document.getElementById("success-tip");
+        const cellElems = Array.from({length: 81}, (_, index) => {
+            const elem = document.createElement("span");
+            const row = Math.floor(index / 9);
+            const col = index % 9;
+            elem.dataset.row = row.toString();
+            elem.dataset.col = col.toString();
+            elem.classList.add('cell');
+            if (col < 8 && col % 3 === 2) {
+                elem.classList.add('vd-l');
+            }
+            if (col && col % 3 === 0) {
+                elem.classList.add('vd-r');
+            }
+            if (row < 8 && row % 3 === 2) {
+                elem.classList.add('hd-t');
+            }
+            if (row && row % 3 === 0) {
+                elem.classList.add('hd-b');
+            }
+            if (col === 8) {
+                elem.classList.add('lc');
+            }
+            if (row === 8) {
+                elem.classList.add('lr');
+            }
+            return elem;
+        });
+        const selectItem = new Array(2);
+        let errors = {};
+        let list = [];
+        let blankCount = 30;
+
+        // 数据填充到input
+        countInput.value = blankCount;
+
+        // 添加单元格
+        for (let em of cellElems) {
+            const fragment = document.createDocumentFragment();
+            fragment.appendChild(em);
+            blockContainer.appendChild(fragment);
+        }
+
+        // 监听点击
+        blockContainer.addEventListener("click", ({target}) => {
+            if (target.tagName !== 'SPAN') {
+                return;
+            }
+            let {row, col} = target.dataset;
+            row = Number(row);
+            col = Number(col);
+            const value = target.innerHTML;
+            for (let em of cellElems) {
+                em.classList.remove('selected');
+                em.style.backgroundColor = `var(--bg${em.innerHTML})`;
+            }
+            if (value) {
+                blockContainer.style.cssText = `--bg${value}: rgb(240, 217, 220)`;
+            } else {
+                blockContainer.style.cssText = '';
+            }
+            target.classList.add('selected');
+            selectItem[0] = row;
+            selectItem[1] = col;
+            for (let i = 0; i < 9; i++) {
+                if (i !== col) {
+                    cellElems[row * 9 + i].style.backgroundColor = `var(--bg${cellElems[row * 9 + i].innerHTML}, rgb(241, 241, 241))`;
+                }
+                if (i !== row) {
+                    cellElems[i * 9 + col].style.backgroundColor = `var(--bg${cellElems[i * 9 + col].innerHTML}, rgb(241, 241, 241))`;
+                }
+            }
+            if (!list[row][col].able) {
+                valuePicker.classList.add('disable');
+            } else {
+                valuePicker.classList.remove('disable');
+            }
+        })
+
+        // 监听值输入
+        valuePicker.addEventListener("click", ({target}) => {
+            if (selectItem[0] === undefined ||
+                selectItem[1] === undefined ||
+                target.tagName !== 'SPAN') {
+                return;
+            }
+            if (!list[selectItem[0]][selectItem[1]].able) {
+                return;
+            }
+
+            const value = target.innerHTML === '清除' ? '' : target.innerHTML;
+            const index = selectItem[0] * 9 + selectItem[1];
+            const previousVal = cellElems[index].innerHTML;
+            if (previousVal === value) {
+                return;
+            }
+            if (!value) {
+                blankCount++;
+            } else if (!previousVal) {
+                blankCount--;
+            }
+            if (value) {
+                blockContainer.style.cssText = `--bg${value}: rgb(240, 217, 220)`;
+                list[selectItem[0]][selectItem[1]].value = Number(value);
+            } else {
+                blockContainer.style.cssText = '';
+                list[selectItem[0]][selectItem[1]].value = '';
+            }
+            cellElems[index].style.backgroundColor = `var(--bg${value})`;
+            cellElems[index].innerHTML = value;
+            const entries = Object.entries(errors);
+            entries.forEach(([k, v]) => {
+                if (k.includes(`${selectItem[0]},${selectItem[1]}`) && v === previousVal) {
+                    const pos = k.split("|").map(it => it.split(",").map(Number));
+                    cellElems[pos[0][0] * 9 + pos[0][1]].classList.remove('error');
+                    cellElems[pos[1][0] * 9 + pos[1][1]].classList.remove('error');
+                    delete errors[k];
+                }
+            })
+            const err = check(selectItem[0], selectItem[1], Number(value));
+            err.forEach(item => {
+                errors[genKey(item[0], item[1])] = value;
+            })
+            Object.keys(errors).forEach(k => {
+                const pos = k.split("|").map(it => it.split(",").map(Number));
+                if (!cellElems[pos[0][0] * 9 + pos[0][1]].classList.contains('error')) {
+                    cellElems[pos[0][0] * 9 + pos[0][1]].classList.add('error');
+                }
+                if (!cellElems[pos[1][0] * 9 + pos[1][1]].classList.contains('error')) {
+                    cellElems[pos[1][0] * 9 + pos[1][1]].classList.add('error');
+                }
+            })
+            if (blankCount === 0 && Object.keys(errors).length === 0) {
+                successTip.style.display = 'block';
+                valuePicker.classList.add('game-over');
+            }
+        })
+
+        // 监听确认
+        submitBtn.addEventListener("click", () => {
+            blankCount = Number(countInput.value);
+            if (blankCount >= 0 && blankCount <= 81) {
+                startNewGame({blankCount});
+            }
+        })
+
+        // 状态持久化
+        window.addEventListener("beforeunload", () => {
+            if (blankCount !== 0 || Object.keys(errors).length !== 0) {
+                localStorage.setItem('sudoku-config', JSON.stringify({
+                    list,
+                    blankCount,
+                    errors
+                }))
+            }
+        })
+
+        startNewGame(config || {blankCount});
+        localStorage.removeItem('sudoku-config');
+
+        function genKey(p1, p2) {
+            if (p1[0] > p2[0]) {
+                return `${p2[0]},${p2[1]}|${p1[0]},${p1[1]}`;
+            } else if (p1[0] < p2[0]) {
+                return `${p1[0]},${p1[1]}|${p2[0]},${p2[1]}`;
+            } else if (p1[1] < p2[1]) {
+                return `${p1[0]},${p1[1]}|${p2[0]},${p2[1]}`;
+            } else {
+                return `${p2[0]},${p2[1]}|${p1[0]},${p1[1]}`;
+            }
+        }
+
+        /**
+         * 开始新游戏
+         * @param config 数独初始化配置
+         */
+        function startNewGame(config) {
+            if (!config?.list) {
+                const ans = createAns();
+                list = ans.map(item => item.map(it => ({value: it, able: false})));
+                errors = {};
+                const blankSet = new Set();
+                while (config?.blankCount) {
+                    let index = Math.floor(Math.random() * 81);
+                    while (blankSet.has(index)) {
+                        index = (index + 1) % 81;
+                    }
+                    blankSet.add(index);
+                    config.blankCount--;
+                }
+                blankSet.forEach(item => {
+                    const row = Math.floor(item / 9);
+                    const col = item % 9;
+                    list[row][col] = {
+                        value: '',
+                        able: true
+                    }
+                })
+            } else {
+                list = config.list;
+                errors = config?.errors || {};
+            }
+            successTip.style.display = 'none';
+            blockContainer.style.cssText = '';
+            valuePicker.classList.remove('game-over');
+            const errorsKey = Object.keys(errors);
+            list.forEach((item, i) => {
+                item.forEach(({value}, j) => {
+                    if (errorsKey.some(item => item.includes(`${i},${j}`))) {
+                        if (!cellElems[i * 9 + j].classList.contains('error')) {
+                            cellElems[i * 9 + j].classList.add('error');
+                        }
+                    } else {
+                        cellElems[i * 9 + j].classList.remove('error');
+                    }
+                    cellElems[i * 9 + j].classList.remove('selected');
+                    cellElems[i * 9 + j].style.backgroundColor = `var(--bg${value})`;
+                    cellElems[i * 9 + j].innerHTML = value;
+                })
+            })
+        }
+
+        /**
+         * 打乱数组，每次随机选择个数和当前数字交换
+         * @param arr
+         * @returns {*}
+         */
+        function disrupt(arr) {
+            let len = arr.length, disruptIndex, temp;
+            while (len) {
+                disruptIndex = Math.floor(Math.random() * (len--));
+                temp = arr[disruptIndex];
+                arr[disruptIndex] = arr[len];
+                arr[len] = temp;
+            }
+            return arr;
+        }
+
+        /**
+         * 顺序交换数组行或列
+         * @param src 源数组
+         * @param isRow 是否交换行
+         */
+        function arrayContinuousExchanged(src, isRow) {
+            const result = [];
+            const lastAray = JSON.parse(JSON.stringify(src));
+            const rowCount = lastAray.length;
+            const colCount = lastAray[0].length;
+            const length = isRow ? colCount : rowCount;
+            const count = isRow ? rowCount - 1 : colCount - 1;
+            for (let i = 0; i < count; i++) {
+                for (let j = 0; j < length - 1; j++) {
+                    exchangeArray(lastAray, isRow, j, j + 1);
+                }
+                result.push(JSON.parse(JSON.stringify(lastAray)));
+            }
+            return result;
+        }
+
+        /**
+         * 交换源数组行或列
+         * @param src
+         * @param isRow
+         * @param i1
+         * @param i2
+         * @returns {*}
+         */
+        function exchangeArray(src, isRow, i1, i2) {
+            const length = isRow ? src[i1].length : src.length;
+            for (let i = 0; i < length; i++) {
+                const temp = src[isRow ? i1 : i][isRow ? i : i1];
+                src[isRow ? i1 : i][isRow ? i : i1] = src[isRow ? i2 : i][isRow ? i : i2];
+                src[isRow ? i2 : i][isRow ? i : i2] = temp;
+            }
+            return src;
+        }
+
+        /**
+         * 用3*3填充9*9矩阵
+         * @param offset 偏移量
+         * @param source 3*3
+         * @param target 9*9
+         */
+        function fillArray(offset, source, target) {
+            const baseRow = 3 * Math.floor(offset / 3);
+            const baseCol = 3 * (offset % 3);
+            const row = source.length;
+            const col = source[0].length;
+            for (let i = 0; i < row; i++) {
+                for (let j = 0; j < col; j++) {
+                    target[baseRow + i][baseCol + j] = source[i][j];
+                }
+            }
+        }
+
+        /**
+         * 检查填入的数字是否正确
+         * @param x 填入数字的x轴坐标
+         * @param y 填入数字的y轴坐标
+         * @param value 填入的数值
+         */
+        function check(x, y, value) {
+            const error = [];
+            for (let i = 0; i < 9; i++) {
+                if (i !== y && list[x][i].value === value) {
+                    error.push([[x, i], [x, y]]);
+                }
+                if (i !== x && list[i][y].value === value) {
+                    error.push([[i, y], [x, y]]);
+                }
+            }
+            const baseRow = Math.floor(x / 3) * 3;
+            const baseCol = Math.floor(y / 3) * 3;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (baseRow + i !== x && baseCol + j !== y && list[baseRow + i][baseCol + j].value === value) {
+                        error.push([[baseRow + i, baseCol + j], [x, y]]);
+                    }
+                }
+            }
+            return error;
+        }
+
+        /**
+         * 创建一种数独答案
+         * @returns {any[]}
+         */
+        function createAns() {
+            const num = disrupt([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            const seed = Array.from(new Array(3), () => new Array(3));
+            const src = Array.from({length: 9}, () => Array.from({length: 9}));
+            for (let i = 0; i < 9; i++) seed[Math.floor(i / 3)][i % 3] = num[i];
+            const seeds = arrayContinuousExchanged(seed, true);
+            fillArray(4, seed, src);
+            const middle = arrayContinuousExchanged(seed, false);
+            fillArray(1, middle[0], src);
+            fillArray(7, middle[1], src);
+            const left = arrayContinuousExchanged(seeds[0], false);
+            fillArray(0, left[0], src);
+            fillArray(3, seeds[0], src);
+            fillArray(6, left[1], src);
+            const right = arrayContinuousExchanged(seeds[1], false);
+            fillArray(2, right[0], src);
+            fillArray(5, seeds[1], src);
+            fillArray(8, right[1], src);
+
+            for (let i = 0; i < 30; i++) {
+                const type = Math.random() > 0.5;
+                const i1 = Math.floor(Math.random() * 8);
+                const i2 = 3 * Math.floor(i1 / 3) + (i1 % 3 + Math.floor(Math.random() * 2) + 1) % 3;
+                exchangeArray(src, type, i1, i2);
+            }
+            return src;
+        }
+
+    })()
+</script>
+</body>
+</html>
