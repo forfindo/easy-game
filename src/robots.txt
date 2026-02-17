@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://nk-ava.github.io/easy-game/sitemap.xml
+Sitemap: https://forfindo.github.io/easy-game/sitemap.xml
