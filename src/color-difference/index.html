@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="找色差在线玩免费无需下载，经典趣味找色差小游戏网页版，电脑手机打开即玩！无广告全屏适配，多关卡多难度可选，边玩边锻炼眼力和观察力，休闲碎片时光轻松玩！">
+    <meta name="keywords" content="找色差在线玩,免费找色差小游戏,找色差在线玩 无需下载,在线找色差网页版">
+    <link rel="stylesheet" href="../assets/css/common.css"/>
+    <title>找色差</title>
+    <style>
+        #canvas {
+            width: 100%;
+            aspect-ratio: 1;
+            margin: 0 auto;
+            display: block;
+            border: 2px #f6f6f6 solid;
+            border-radius: 10px;;
+            box-sizing: border-box;
+        }
+
+        p {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <canvas width="400" height="400" id="canvas">
+        该浏览器不支持，请更换浏览器
+    </canvas>
+    <p>
+        <span>当前分数：</span>
+        <span id="score"></span>
+    </p>
+</div>
+<script lang="javascript" src="../assets/js/color-difference.js"></script>
+</body>
+</html>

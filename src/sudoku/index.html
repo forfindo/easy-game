@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="经典数独在线玩免费网页版，无需下载无广告，打开即玩！支持入门、中级、高级多难度自由切换，电脑手机全屏适配，操作简单易上手，实时记录解题进度，是锻炼逻辑思维、打发碎片时间的优质数独小游戏！">
+    <meta name="keywords" content="数独在线玩,免费在线数独,数独小游戏网页版,数独在线玩 无需下载">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <title>数独</title>
+    <style>
+        .container {
+            position: static;
+        }
+
+        .block-container {
+            width: 100%;
+            border: 2px black solid;
+            box-sizing: border-box;
+        }
+
+        .block-container::after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .tip {
+            margin: 10px 0;
+        }
+
+        .value-picker {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 5px;
+        }
+
+        .value-item {
+            flex-grow: 1;
+            text-align: center;
+            padding: 10px 0;
+            box-sizing: border-box;
+            border: 2px #ADADAD solid;
+            border-radius: 5px;
+        }
+
+        .value-item.clear-value {
+            grid-column: 1 / 3;
+        }
+
+        .value-picker.disable .value-item {
+            background-color: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+        }
+
+        .value-picker.disable,
+        .value-picker.game-over {
+            pointer-events: none;
+        }
+
+        .value-picker.game-over .value-item {
+            background-color: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+        }
+
+        .value-item:hover {
+            background-color: #ADADAD;
+        }
+
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            width: 11.11%;
+            aspect-ratio: 1;
+            font-size: 25px;
+            float: left;
+            border-right: #ADADAD 1px solid;
+            border-bottom: #ADADAD 1px solid;
+        }
+
+        .cell.error {
+            background-color: red !important;
+        }
+
+        .vd-l {
+            border-right: black 1px solid;
+        }
+
+        .vd-r {
+            border-left: black 1px solid;
+        }
+
+        .hd-t {
+            border-bottom: black 1px solid;
+        }
+
+        .hd-b {
+            border-top: black 1px solid;
+        }
+
+        .lc {
+            border-right: unset;
+        }
+
+        .lr {
+            border-bottom: unset;
+        }
+
+        .selected {
+            background-color: rgb(240, 217, 220) !important;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="block-container"></div>
+    <p class="tip">请选择：</p>
+    <div class="value-picker">
+        <span class="value-item">1</span>
+        <span class="value-item">2</span>
+        <span class="value-item">3</span>
+        <span class="value-item">4</span>
+        <span class="value-item">5</span>
+        <span class="value-item">6</span>
+        <span class="value-item">7</span>
+        <span class="value-item">8</span>
+        <span class="value-item">9</span>
+        <span class="value-item clear-value">清除</span>
+    </div>
+    <p class="tip">空白块个数：</p>
+    <label>
+        <input id="count-input" type="number" max="81" min="1"/>
+        <button id="count-submit">重新开始</button>
+    </label>
+    <h2 style="display: none" id="success-tip">你过关！！！！</h2>
+</div>
+<script lang="javascript" src="../assets/js/sudoku.js"></script>
+</body>
+</html>

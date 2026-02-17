@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="2048游戏玩法技巧,2048合并技巧,2048基础规则">
+    <meta name="description" content="2048在线玩免费不用下载，经典2048网页版小游戏，电脑手机均可全屏玩，无广告无弹窗，打开即玩，轻松体验2048合并的乐趣！">
+    <link rel="stylesheet" href="../assets/css/common.css"/>
+    <title>2048小游戏</title>
+    <style>
+        html,
+        body {
+            text-align: center;
+            overscroll-behavior: none;
+        }
+
+        .cell-box {
+            background-color: #bbac9f;
+            margin: 0 auto;
+            border-radius: 10px;
+            padding: 4px;
+            display: grid;
+            width: 100%;
+            aspect-ratio: 1;
+            box-sizing: border-box;
+        }
+
+        .cell-wrapper {
+            margin: 4px;
+            background-color: rgb(205, 192, 178);
+            border-radius: 5px;
+        }
+
+        .cell {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+            font-weight: bold;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="cell-box"></div>
+    <p>剩<span class="unDeal"></span>个空方格未合并</p>
+    <p>当前分数：<span class="sc"></span></p>
+    <button id="resetBtn">重新开始</button>
+</div>
+<script lang="javascript" src="../assets/js/2048.js"></script>
+</body>
+
+</html>
