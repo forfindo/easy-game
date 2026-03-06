@@ -6,32 +6,172 @@
     <meta name="description" content="找色差在线玩免费无需下载，经典趣味找色差小游戏网页版，电脑手机打开即玩！无广告全屏适配，多关卡多难度可选，边玩边锻炼眼力和观察力，休闲碎片时光轻松玩！">
     <meta name="keywords" content="找色差在线玩,免费找色差小游戏,找色差在线玩 无需下载,在线找色差网页版">
     <link rel="stylesheet" href="../assets/css/common.css"/>
-    <title>找色差</title>
+    <title>找色差 - 考验眼力的小游戏</title>
     <style>
+        body {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 15px;
+        }
+
+        .game-header {
+            margin-bottom: 30px;
+        }
+
+        .game-header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-header p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
         #canvas {
             width: 100%;
             aspect-ratio: 1;
-            margin: 0 auto;
+            margin: 0 auto 30px;
             display: block;
-            border: 2px #f6f6f6 solid;
-            border-radius: 10px;;
+            border: 3px solid rgba(79, 172, 254, 0.2);
+            border-radius: 16px;
             box-sizing: border-box;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            background: white;
+            transition: all 0.3s ease;
         }
 
-        p {
-            text-align: center;
+        #canvas:hover {
+            border-color: rgba(79, 172, 254, 0.4);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .game-info {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .score-label {
+            color: #666;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .score-value {
+            color: #333;
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .instructions {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(79, 172, 254, 0.4);
+        }
+
+        .control-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #4facfe;
         }
     </style>
 </head>
 <body>
 <div class="container">
+    <div class="game-header">
+        <h1>🎨 找色差</h1>
+        <p>考验眼力，找出颜色不同的方块！</p>
+    </div>
+    
     <canvas width="400" height="400" id="canvas">
         该浏览器不支持，请更换浏览器
     </canvas>
-    <p>
-        <span>当前分数：</span>
-        <span id="score"></span>
-    </p>
+    
+    <div class="game-info">
+        <div class="score-display">
+            <span class="score-label">当前分数：</span>
+            <span class="score-value" id="score">0</span>
+        </div>
+        
+        <div class="instructions">
+            <strong>游戏说明：</strong>点击颜色不同的方块即可得分。方块越小，得分越高！
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button class="control-btn" onclick="resetGame()">🔄 重新开始</button>
+        <button class="control-btn" onclick="nextLevel()">➡️ 下一关</button>
+    </div>
+    
+    <a href="../index.html" class="back-link">← 返回游戏大厅</a>
 </div>
 <script lang="javascript" src="../assets/js/color-difference.js"></script>
 </body>

@@ -4,7 +4,7 @@
     const valuePicker = document.querySelector(".value-picker");
     const countInput = document.getElementById("count-input");
     const submitBtn = document.getElementById("count-submit");
-    const successTip = document.getElementById("success-tip");
+    const successTip = document.getElementById("success-overlay");
     const cellElems = Array.from({length: 81}, (_, index) => {
         const elem = document.createElement("span");
         const row = Math.floor(index / 9);

@@ -8,49 +8,164 @@
     <link rel="stylesheet" href="../assets/css/common.css"/>
     <title>2048小游戏</title>
     <style>
-        html,
         body {
-            text-align: center;
-            overscroll-behavior: none;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 15px;
+        }
+
+        .game-header {
+            margin-bottom: 30px;
+        }
+
+        .game-header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-header p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
         }
 
         .cell-box {
-            background-color: #bbac9f;
-            margin: 0 auto;
-            border-radius: 10px;
+            background: linear-gradient(135deg, #bbac9f 0%, #a8998d 100%);
+            margin: 0 auto 30px;
+            border-radius: 16px;
             padding: 4px;
             display: grid;
             width: 100%;
             aspect-ratio: 1;
             box-sizing: border-box;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .cell-wrapper {
             margin: 4px;
-            background-color: rgb(205, 192, 178);
-            border-radius: 5px;
+            background: rgba(205, 192, 178, 0.8);
+            border-radius: 8px;
         }
 
         .cell {
             position: relative;
             width: 100%;
             height: 100%;
-            border-radius: 5px;
+            border-radius: 8px;
             font-weight: bold;
             box-sizing: border-box;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .stat-label {
+            display: block;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            display: block;
+            color: #333;
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        #resetBtn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.3);
+            margin-top: 10px;
+        }
+
+        #resetBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(245, 87, 108, 0.4);
+        }
+
+        #resetBtn:active {
+            transform: translateY(-1px);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #f5576c;
         }
     </style>
 </head>
 
 <body>
 <div class="container">
+    <div class="game-header">
+        <h1>🎮 2048</h1>
+        <p>滑动合并相同数字，挑战2048！</p>
+    </div>
+    
     <div class="cell-box"></div>
-    <p>剩<span class="unDeal"></span>个空方格未合并</p>
-    <p>当前分数：<span class="sc"></span></p>
-    <button id="resetBtn">重新开始</button>
+    
+    <div class="stats">
+        <div class="stat-item">
+            <span class="stat-label">剩余空格</span>
+            <span class="stat-value unDeal">16</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">当前分数</span>
+            <span class="stat-value sc">0</span>
+        </div>
+    </div>
+    
+    <button id="resetBtn">🔄 重新开始</button>
+    
+    <a href="../index.html" class="back-link">← 返回游戏大厅</a>
 </div>
 <script lang="javascript" src="../assets/js/2048.js"></script>
 </body>
