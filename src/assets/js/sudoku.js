@@ -37,9 +37,6 @@
     let list = [];
     let blankCount = 30;
 
-    // 数据填充到input
-    countInput.value = blankCount;
-
     // 添加单元格
     for (let em of cellElems) {
         const fragment = document.createDocumentFragment();
@@ -90,7 +87,7 @@
             target.tagName !== 'SPAN') {
             return;
         }
-        if (!list[selectItem[0]][selectItem[1]].able) {
+        if (!list[selectItem[0]][selectItem[1]].able || valuePicker.classList.contains("disable")) {
             return;
         }
 
@@ -138,7 +135,7 @@
         })
         if (blankCount === 0 && Object.keys(errors).length === 0) {
             successTip.style.display = 'block';
-            valuePicker.classList.add('game-over');
+            valuePicker.classList.add('disable');
         }
     })
 
@@ -161,6 +158,9 @@
         }
     })
 
+    // 数据填充到input
+    countInput.value = config.blankCount || 30;
+    blankCount = config.blankCount || 30;
     startNewGame(config || {blankCount});
     localStorage.removeItem('sudoku-config');
 
