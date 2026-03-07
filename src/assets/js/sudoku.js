@@ -159,8 +159,8 @@
     })
 
     // 数据填充到input
-    countInput.value = config.blankCount || 30;
-    blankCount = config.blankCount || 30;
+    countInput.value = config?.blankCount || 30;
+    blankCount = config?.blankCount || 30;
     startNewGame(config || {blankCount});
     localStorage.removeItem('sudoku-config');
 
