@@ -168,26 +168,7 @@
     <a href="../index.html" class="back-link">← 返回游戏大厅</a>
 </div>
 <script lang="javascript" src="../assets/js/2048.js"></script>
-<script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js')
-            .then(function (reg) {
-                console.log('[PWA] Service Worker 注册成功:', reg.scope);
-                // 监听安装提示
-                reg.addEventListener('updatefound', function () {
-                    const newWorker = reg.installing;
-                    newWorker.addEventListener('statechange', function () {
-                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            console.log('[PWA] 新版本已就绪，刷新页面即可更新');
-                        }
-                    });
-                });
-            })
-            .catch(function (err) {
-                console.warn('[PWA] Service Worker 注册失败:', err);
-            });
-    }
-</script>
+<script lang="javascript" src="../assets/js/service-worker.js"></script>
 </body>
 
 </html>
