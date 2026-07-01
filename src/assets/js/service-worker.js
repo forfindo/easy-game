@@ -30,7 +30,7 @@ async function onClickInstall() {
   // 等待用户选择
   const { outcome } = await installEvent.userChoice;
   console.log('[PWA] 用户安装选择:', outcome);
-  installing = outcome;
+  installing = (outcome === 'accepted');
   installEvent = null;
 }
 
