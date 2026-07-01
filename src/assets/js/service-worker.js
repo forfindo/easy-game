@@ -3,6 +3,88 @@ const isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/
 
 const isPWA = navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
 
+// ========== PWA 手动安装 ==========
+let installEvent = null;
+let installBtn = null;
+let tips = null;
+let installing = false;
+const container = document.querySelector('.container');
+if (isMobile && !isPWA) {
+  tips = document.createElement('p');
+  tips.id = 'pwa-tips';
+  tips.style.cssText = `margin-top: 15px; text-align: center; color: grey;`
+  tips.textContent = '该浏览器不支持自动一键安装到桌面';
+  container?.appendChild(tips);
+}
+
+async function onClickInstall() {
+  if (!installEvent) return;
+
+  if (installing) {
+    alert('正在安装...');
+  }
+
+  // 显示安装提示
+  installEvent.prompt();
+
+  // 等待用户选择
+  const { outcome } = await installEvent.userChoice;
+  console.log('[PWA] 用户安装选择:', outcome);
+  installing = outcome;
+  installEvent = null;
+}
+
+// 创建安装按钮
+function createInstallBtn() {
+  installBtn = document.createElement('button');
+  installBtn.id = 'pwa-install-btn';
+  installBtn.textContent = '📱 安装到桌面';
+  installBtn.style.cssText = `
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 14px 36px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    margin-top: 15px;
+    width: 100%;
+    display: block;
+  `;
+  installBtn.addEventListener('click', onClickInstall);
+
+  // 添加到 container 末尾
+  container?.appendChild(installBtn);
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  console.log('[PWA] beforeinstallprompt 触发，PWA可安装');
+  if (tips) {
+    tips.style.display = 'none';
+  }
+  // 只有移动端才显示安装按钮, 如果已经以PWA模式运行，不显示按钮
+  if (!isMobile || isPWA) return;
+
+  // 阻止浏览器默认的安装提示
+  e.preventDefault();
+  installEvent = e;
+
+  // 避免重复创建按钮
+  if (document.getElementById('pwa-install-btn')) return;
+
+  createInstallBtn();
+});
+
+window.addEventListener('appinstalled', () => {
+  installEvent = null;
+  installing = false;
+  installBtn?.remove();
+  installBtn?.removeEventListener("click", onClickInstall);
+})
+
 // ========== Service Worker 注册 ==========
 function onSuccessRegistry(reg) {
   console.log('[PWA] Service Worker 注册成功:', reg.scope);
@@ -29,80 +111,3 @@ if ('serviceWorker' in navigator) {
         })
     });
 }
-
-function hiddenBackLink() {
-  const standaloneEl = document.querySelector(".back-link");
-  if (standaloneEl) standaloneEl.style.display = 'none';
-}
-
-if (isPWA) {
-  hiddenBackLink();
-}
-
-// ========== PWA 手动安装 ==========
-let installEvent = null;
-window.addEventListener('beforeinstallprompt', (e) => {
-  console.log('[PWA] beforeinstallprompt 触发，PWA可安装');
-  // 只有移动端才显示安装按钮, 如果已经以PWA模式运行，不显示按钮
-  if (!isMobile || isPWA) return;
-
-  // 阻止浏览器默认的安装提示
-  e.preventDefault();
-  installEvent = e;
-
-  // 避免重复创建按钮
-  if (document.getElementById('pwa-install-btn')) return;
-
-  // 创建安装按钮
-  const installBtn = document.createElement('button');
-  installBtn.id = 'pwa-install-btn';
-  installBtn.textContent = '📱 安装到桌面';
-  installBtn.style.cssText = `
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 16px 40px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    margin-top: 15px;
-    width: 100%;
-    display: block;
-  `;
-
-  async function onClickInstall() {
-    if (!installEvent) return;
-
-    // 显示安装提示
-    installEvent.prompt();
-
-    // 等待用户选择
-    const { outcome } = await installEvent.userChoice;
-    console.log('[PWA] 用户安装选择:', outcome);
-
-    if (outcome === 'accepted') {
-      installBtn.remove();
-      installBtn.removeEventListener("click", onClickInstall);
-      hiddenBackLink();
-    }
-
-    installEvent = null;
-  }
-
-  installBtn.addEventListener('click', onClickInstall);
-
-  // 将按钮插入到 resetBtn 后面
-  const resetBtn = document.getElementById('resetBtn');
-  if (resetBtn) {
-    resetBtn.insertAdjacentElement('afterend', installBtn);
-  } else {
-    // fallback: 添加到 container 末尾
-    const container = document.querySelector('.container');
-    if (container) {
-      container.appendChild(installBtn);
-    }
-  }
-});

@@ -3,26 +3,12 @@
 ## 项目概述
 Easy Game 是一个基于网页的游戏集合（2048、找色差、数独），使用原生 HTML、CSS 和 JavaScript 构建。项目使用自定义构建脚本进行压缩和优化。
 
-## 构建系统
-
-### 可用命令
-```bash
-# 构建项目（压缩 HTML、CSS、JS）
-npm run build
-
-# 安装依赖
-npm install
-
-# 测试（当前为占位符）
-npm test
-```
-
 ## 代码风格指南
 
 ### 文件结构
 ```
-src/
-├── index.html              # 主入口点
+src/                       # 源码目录
+├── index.html             # 主入口点
 ├── assets/
 │   ├── css/
 │   │   └── common.css     # 共享样式

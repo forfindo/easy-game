@@ -53,7 +53,7 @@
 
         .game-info {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 25px;
+            padding: 25px 0;
             border-radius: 16px;
             margin-bottom: 25px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -97,7 +97,7 @@
         .controls {
             display: flex;
             gap: 15px;
-            justify-content: center;
+            justify-content: space-between;
             margin-top: 20px;
         }
 
@@ -105,8 +105,8 @@
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
             border: none;
-            padding: 12px 30px;
-            font-size: 1rem;
+            padding: 14px 36px;
+            font-size: 1.05rem;
             font-weight: 600;
             border-radius: 50px;
             cursor: pointer;
@@ -121,19 +121,6 @@
 
         .control-btn:active {
             transform: translateY(-1px);
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 30px;
-            color: #666;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.3s ease;
-        }
-
-        .back-link:hover {
-            color: #4facfe;
         }
     </style>
 </head>
@@ -169,10 +156,8 @@
         <button class="control-btn" onclick="resetGame()">🔄 重新开始</button>
         <button class="control-btn" onclick="nextLevel()">➡️ 下一关</button>
     </div>
-    
-    <a href="../index.html" class="back-link">← 返回游戏大厅</a>
 </div>
-<script lang="javascript" src="../assets/js/color-difference.js"></script>
 <script lang="javascript" src="../assets/js/service-worker.js"></script>
+<script lang="javascript" src="../assets/js/color-difference.js"></script>
 </body>
 </html>

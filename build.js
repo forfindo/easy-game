@@ -16,12 +16,13 @@ const jsOptions = {
   "base-sw.js": {
     format: "esm"
   },
-  "sw.js": [
-    {},
+  "sw.esm.js": [
     {
       bundle: false,
-      format: "esm",
-      outfile: (origin) => origin.replace(/.js$/, '.esm.js')
+      format: "esm"
+    },
+    {
+      outfile: (origin) => origin.replace(".esm", '')
     }
   ]
 }
