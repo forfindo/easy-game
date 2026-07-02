@@ -6,16 +6,8 @@ const isPWA = navigator.standalone || window.matchMedia("(display-mode: standalo
 // ========== PWA 手动安装 ==========
 let installEvent = null;
 let installBtn = null;
-let tips = null;
 let installing = false;
 const container = document.querySelector('.container');
-if (isMobile && !isPWA) {
-  tips = document.createElement('p');
-  tips.id = 'pwa-tips';
-  tips.style.cssText = `margin-top: 15px; text-align: center; color: grey;`
-  tips.textContent = '该浏览器不支持自动一键安装到桌面';
-  container?.appendChild(tips);
-}
 
 async function onClickInstall() {
   if (!installEvent) return;
@@ -62,9 +54,6 @@ function createInstallBtn() {
 
 window.addEventListener('beforeinstallprompt', (e) => {
   console.log('[PWA] beforeinstallprompt 触发，PWA可安装');
-  if (tips) {
-    tips.style.display = 'none';
-  }
   // 只有移动端才显示安装按钮, 如果已经以PWA模式运行，不显示按钮
   if (!isMobile || isPWA) return;
 
