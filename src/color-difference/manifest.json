@@ -1,13 +1,17 @@
 {
   "name": "找色差",
+  "short_name": "找色差",
   "description": "找色差在线玩免费无需下载，经典趣味找色差小游戏网页版，电脑手机打开即玩！无广告全屏适配，多关卡多难度可选，边玩边锻炼眼力和观察力，休闲碎片时光轻松玩！",
   "icons": [
     {
       "src": "../assets/images/color-diff.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
   "start_url": "./index.html",
-  "display": "standalone"
+  "display": "standalone",
+  "theme_color": "#2196F3",
+  "background_color": "#2196F3"
 }
