@@ -1,78 +1,31 @@
-// ========== 移动端检测 ==========
-const isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
+// ========== 设备检测 ==========
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 const isPWA = navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
 
-// ========== PWA 手动安装 ==========
-let installEvent = null;
-let installBtn = null;
-let installing = false;
-const container = document.querySelector('.container');
-
-async function onClickInstall() {
-  if (!installEvent) return;
-
-  if (installing) {
-    alert('正在安装...');
-  }
-
-  // 显示安装提示
-  installEvent.prompt();
-
-  // 等待用户选择
-  const { outcome } = await installEvent.userChoice;
-  console.log('[PWA] 用户安装选择:', outcome);
-  installing = (outcome === 'accepted');
-  installEvent = null;
-}
-
-// 创建安装按钮
-function createInstallBtn() {
-  installBtn = document.createElement('button');
-  installBtn.id = 'pwa-install-btn';
-  installBtn.textContent = '📱 安装到桌面';
-  installBtn.style.cssText = `
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 14px 36px;
-    font-size: 1.05rem;
-    font-weight: 600;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+// ========== PWA 手动安装（IOS） ==========
+function createIOSGuide() {
+  if (document.getElementById('pwa-ios-guide')) return;
+  const guide = document.createElement('div');
+  guide.id = 'pwa-ios-guide';
+  guide.style.cssText = `
+    background: rgba(255,255,255,0.95);
+    color: #333;
+    border-radius: 16px;
+    padding: 16px 20px;
     margin-top: 15px;
-    width: 100%;
-    display: block;
+    font-size: 0.95rem;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    line-height: 1.6;
   `;
-  installBtn.addEventListener('click', onClickInstall);
-
-  // 添加到 container 末尾
-  container?.appendChild(installBtn);
+  guide.innerHTML = '📌 点击下方 <b>分享按钮</b> → 选择 <b>「添加到主屏幕」</b> 即可安装到桌面';
+  document.querySelector('.container')?.appendChild(guide);
 }
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  console.log('[PWA] beforeinstallprompt 触发，PWA可安装');
-  // 只有移动端才显示安装按钮, 如果已经以PWA模式运行，不显示按钮
-  if (!isMobile || isPWA) return;
-
-  // 阻止浏览器默认的安装提示
-  e.preventDefault();
-  installEvent = e;
-
-  // 避免重复创建按钮
-  if (document.getElementById('pwa-install-btn')) return;
-
-  createInstallBtn();
-});
-
-window.addEventListener('appinstalled', () => {
-  installEvent = null;
-  installing = false;
-  installBtn?.remove();
-  installBtn?.removeEventListener("click", onClickInstall);
-})
+// iOS 不支持 beforeinstallprompt，显示安装引导
+if (isIOS && !isPWA) {
+  createIOSGuide();
+}
 
 // ========== Service Worker 注册 ==========
 function onSuccessRegistry(reg) {
