@@ -42,7 +42,7 @@ jobs:
         run: npm install
       # 构建命令
       - name: Build Script
-        run: node ./build.js
+        run: npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
