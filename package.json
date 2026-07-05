@@ -1,11 +1,12 @@
 {
   "name": "easy-game",
   "version": "1.0.0",
-  "main": "build.js",
+  "main": "scripts/build.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./build.js"
+    "build": "node scripts/build.js",
+    "dev": "node scripts/dev.js"
   },
   "keywords": [],
   "author": "",

@@ -37,6 +37,8 @@ export function initSw(CACHE_TAG, PRECACHE_URLS, version) {
   self.addEventListener('fetch', (event) => {
     // 只处理 GET 请求
     if (event.request.method !== 'GET') return;
+    // 豁免 SSE / EventSource：流式长连接不应被 SW 拦截和缓存
+    if (event.request.headers.get('Accept')?.includes('text/event-stream')) return;
 
     event.respondWith(
       (async () => {
