@@ -13,8 +13,12 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/three": "0.185.0",
     "esbuild": "^0.28.1",
     "html-minifier-terser": "^7.2.0",
     "picocolors": "^1.1.1"
+  },
+  "dependencies": {
+    "three": "0.185.0"
   }
 }
