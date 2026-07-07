@@ -127,6 +127,7 @@ renderer.domElement.addEventListener("pointermove", (e) => {
       const up = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1);
       const horizontalQt = new THREE.Quaternion().setFromAxisAngle(up, offsetX * 0.01);
       const verticalQt = new THREE.Quaternion().setFromAxisAngle(right, offsetY * 0.01);
+      // FIXME: 同时绕两个x和y轴转存在z轴飘逸，多次叠加之后回不到原来的位置。改成只能绕自转方向
       object.quaternion.premultiply(verticalQt.multiply(horizontalQt));
       rotatingObjectMap.set(object, verticalQt);
     }
@@ -170,12 +171,14 @@ renderer.domElement.addEventListener('pointerup', (e) => {
 function animate() {
   controller.update();
   // 处理物体旋转阻尼效果
-  for (const [object, quaternion] of rotatingObjectMap) {
-    if (2 * Math.acos(quaternion.w) < 0.001) {
-      rotatingObjectMap.delete(object);
-    } else {
-      quaternion.slerp(new THREE.Quaternion(), 0.05);
-      object.quaternion.premultiply(quaternion);
+  if (!pointers.size) {
+    for (const [object, quaternion] of rotatingObjectMap) {
+      if (2 * Math.acos(quaternion.w) < 0.001) {
+        rotatingObjectMap.delete(object);
+      } else {
+        quaternion.slerp(new THREE.Quaternion(), 0.05);
+        object.quaternion.premultiply(quaternion);
+      }
     }
   }
   renderer.render(scene, camera);
